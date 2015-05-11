@@ -31,9 +31,14 @@ class sale_order(osv.osv):
                     prod_obj = self.pool.get('product.product')
                     prod_ids = prod_obj.search(cr, uid, [('product_tmpl_id','=',line.product_id.product_tmpl_id.id)])
                     for prod_id in prod_ids:
-                        if not prod_id == line.product_id:
+                        if not prod_id == line.product_id.id:
+                            context_partner = {'lang': sale.partner_id.lang, 'partner_id': sale.partner_id.id}
+                            name = self.pool.get('product.product').name_get(cr, uid, [prod_id], context=context_partner)[0][1]
+                            if line.product_id.product_tmpl_id.description_sale:
+                                name += '\n'+line.product_id.product_tmpl_id.description_sale
                             default = {'product_id': prod_id,
                                        'to_split': False,
+                                       'name': name,
                                        'product_uom_qty': 0.0,
                                        'product_uos_qty': 0.0,
                                        }
