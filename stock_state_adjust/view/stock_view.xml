@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+    <record id="vpicktree_z19" model="ir.ui.view">
+        <field name="name">stock.picking.tree.z19</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.vpicktree"/>
+        <field name="arch" type="xml">
+            <field name="state" position="before">
+                <field name="dispatched"/>
+            </field>
+        </field>
+    </record>
+
+
+    <record id="view_picking_form_z56" model="ir.ui.view">
+        <field name="name">stock.picking.form.z56</field>
+        <field name="model">stock.picking</field>
+		<field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <button name="force_assign" position="after">
+                <button name="action_dispatch" attrs="{'invisible': ['|',('dispatched','=',True),('state','in',['draft','cancel','waiting','confirmed','done'])]}" string="Dispatch" type="object" groups="stock.group_stock_user" class="oe_highlight"/>
+            </button>
+            <button name="do_enter_transfer_details" position="replace">
+                <field name="ok_to_transfer" invisible="1"/>
+                <button name="do_enter_transfer_details" attrs="{'invisible': [('ok_to_transfer','=',False)]}" string="Transfer" groups="stock.group_stock_user" type="object" class="oe_highlight"/>
+<!-- 
+                <button name="do_enter_transfer_details" attrs="{'invisible': [('picking_type_code','=','internal'),('dispatched','=',False)]}" states="assigned,partially_available" string="Transfer" groups="stock.group_stock_user" type="object" class="oe_highlight"/>
+ -->
+            </button>
+            <field name="date" position="before">
+            	<field name="dispatched" readonly="1"/>
+            </field>
+        </field>
+    </record>
+</data>
+</openerp>

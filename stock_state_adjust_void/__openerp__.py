@@ -15,21 +15,21 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 {
-    'name': 'Sale Line Split',
-    'category': 'Sale',
+    'name': 'Stock State Adjust',
+    'category': 'Stock',
     'version': '0.5',
     'author': 'Rooms For (Hong Kong) Limited T/A OSCG',
     'website': 'www.openerp-asia.net',
-    'depends': ['sale',
+    'depends': ['stock',
                 ],
     'summary':"""""",
     'description': """ 
 Overview:
 ---------
-- Adds a button in SO to split lines for all the available product variants for the selected product.
+- Adds a state 'Dispatched' in between 'Ready to Transfer' and 'Transferred'.
     """,
     'data': [
-             'view/sale_view.xml',
+             'view/stock_view.xml',
              ],
     'installable': True,
 }
