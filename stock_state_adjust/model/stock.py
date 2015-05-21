@@ -20,7 +20,7 @@ from openerp.tools.translate import _
 
 class stock_move(osv.osv):
     _inherit = "stock.move"
-    
+     
     _columns = {
         'dispatched': fields.boolean('Dispatched',
             help="""
@@ -35,12 +35,26 @@ class stock_picking(osv.osv):
 
     def action_dispatch(self, cr, uid, ids, context=None):
         move_obj = self.pool.get('stock.move')
-        move_ids = move_obj.search(cr, uid, [('picking_id','in',ids),('state','=','assigned'),('dispatched','=',False)], context=context)
+#         move_ids = move_obj.search(cr, uid, [('picking_id','in',ids),('state','=','assigned'),('dispatched','=',False)], context=context)
+        move_ids = move_obj.search(cr, uid, [('picking_id','in',ids),('state','=','assigned')], context=context)
         if move_ids:
             for move in move_obj.browse(cr, uid, move_ids, context=context):
                 move_obj.write(cr, uid, [move.id], {'dispatched': True}, context=context)
             self.write(cr, uid, ids, {'dispatched': True}, context=context)
 
+    def _update_dispatched(self, cr, uid, ids, name, args, context=None):
+        res = {}
+        for p in self.browse(cr, uid, ids, context=context):
+            res[p.id] = p.dispatched
+            if p.state not in ['assigned', 'partially_available']:
+                res[p.id] = False
+                move_obj = self.pool.get('stock.move')
+                move_ids = move_obj.search(cr, uid, [('picking_id','=',p.id)], context=context)
+                if move_ids:
+                    for m in move_obj.browse(cr, uid, move_ids, context=context):
+                        move_obj.write(cr, uid, [m.id], {'dispatched': False}, context=context)
+        return res
+    
     def _get_ok_to_transfer(self, cr, uid, ids, name, args, context=None):
         res = {}
         for p in self.browse(cr, uid, ids, context=context):
@@ -53,11 +67,10 @@ class stock_picking(osv.osv):
         return res
 
     _columns = {
-        'dispatched': fields.boolean('Dispatched',
-            help="""
-            Indicates that the products have been dispatched for internal transfer and waiting to be received by the destination location.
-            """),
+        'dispatched': fields.function(_update_dispatched, type='boolean', string='Dispatched',
+            store={
+                'stock.picking': (lambda self, cr, uid, ids, c={}: ids, ['state'], 10)}),
         'ok_to_transfer': fields.function(_get_ok_to_transfer, type='boolean', string='OK to Transfer',
-              store={
-                  'stock.picking': (lambda self, cr, uid, ids, c={}: ids, ['state', 'dispatched'], 10),}),
+            store={
+                'stock.picking': (lambda self, cr, uid, ids, c={}: ids, ['state', 'dispatched'], 20),}),
     }
