@@ -14,63 +14,65 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from openerp.osv import fields, osv
-from openerp.tools.translate import _
+from openerp import models, fields, api, _
 
 
-class stock_move(osv.osv):
-    _inherit = "stock.move"
-     
-    _columns = {
-        'dispatched': fields.boolean('Dispatched',
-            help="""
-            Indicates that the product has been dispatched for internal transfer and waiting to be received by the destination location.
-            """
-        )
-    }
+class StockMove(models.Model):
+    _inherit = 'stock.move'
+ 
+    dispatched = fields.Boolean(
+        string='Dispatched', copy=False)
+
+    @api.cr_uid_ids_context
+    def do_unreserve(self, cr, uid, move_ids, context=None):
+        res = super(StockMove, self).do_unreserve(cr, uid, move_ids, context)
+        for move in self.browse(cr, uid, move_ids, context=context):
+            if self.find_move_ancestors(cr, uid, move, context=context):
+                self.write(cr, uid, [move.id], {'dispatched': False}, context=context)
+            else:
+                self.write(cr, uid, [move.id], {'dispatched': False}, context=context)
 
 
-class stock_picking(osv.osv):
-    _inherit = "stock.picking"
+class StockPicking(models.Model):
+    _inherit = 'stock.picking'
+ 
+    dispatched = fields.Boolean(compute='_update_dispatched', store=True, string='Dispatched')
+    ok_to_transfer = fields.Boolean(compute='_get_ok_to_transfer', store=True, string='OK to Transfer')
 
-    def action_dispatch(self, cr, uid, ids, context=None):
-        move_obj = self.pool.get('stock.move')
-#         move_ids = move_obj.search(cr, uid, [('picking_id','in',ids),('state','=','assigned'),('dispatched','=',False)], context=context)
-        move_ids = move_obj.search(cr, uid, [('picking_id','in',ids),('state','=','assigned')], context=context)
-        if move_ids:
-            for move in move_obj.browse(cr, uid, move_ids, context=context):
-                move_obj.write(cr, uid, [move.id], {'dispatched': True}, context=context)
-            self.write(cr, uid, ids, {'dispatched': True}, context=context)
+    @api.one
+    def action_dispatch(self):
+        Move = self.env['stock.move']
+        moves = Move.search([('picking_id','=',self.id),('state','=','assigned')])
+        if moves:
+            moves.write({'dispatched': True})
+#             self.write({'dispatched': True})
+ 
+    @api.one
+    @api.depends('state', 'move_lines.dispatched')
+    def _update_dispatched(self):
+#         if self.state not in ['assigned', 'partially_available']:
+        if self.state in ['assigned', 'partially_available']:
+            self.dispatched = False
+            Move = self.env['stock.move']
+            moves = Move.search([('picking_id','=',self.id)])
+            if moves:
+                for m in moves:
+                    self.dispatched = m.dispatched
+#                     m.write({'dispatched': False})
+ 
+    @api.one
+    @api.depends('dispatched', 'state')
+    def _get_ok_to_transfer(self):
+        self.ok_to_transfer = False
+        if self.state in ['assigned', 'partially_available']:
+            if self.picking_type_code != 'internal':
+                self.ok_to_transfer = True
+            elif self.dispatched == True:
+                self.ok_to_transfer = True 
 
-    def _update_dispatched(self, cr, uid, ids, name, args, context=None):
-        res = {}
-        for p in self.browse(cr, uid, ids, context=context):
-            res[p.id] = p.dispatched
-            if p.state not in ['assigned', 'partially_available']:
-                res[p.id] = False
-                move_obj = self.pool.get('stock.move')
-                move_ids = move_obj.search(cr, uid, [('picking_id','=',p.id)], context=context)
-                if move_ids:
-                    for m in move_obj.browse(cr, uid, move_ids, context=context):
-                        move_obj.write(cr, uid, [m.id], {'dispatched': False}, context=context)
-        return res
-    
-    def _get_ok_to_transfer(self, cr, uid, ids, name, args, context=None):
-        res = {}
-        for p in self.browse(cr, uid, ids, context=context):
-            res[p.id] = False
-            if p.state in ['assigned', 'partially_available']:
-                if p.picking_type_code != 'internal':
-                    res[p.id] = True
-                elif p.dispatched == True:
-                    res[p.id] = True 
-        return res
-
-    _columns = {
-        'dispatched': fields.function(_update_dispatched, type='boolean', string='Dispatched',
-            store={
-                'stock.picking': (lambda self, cr, uid, ids, c={}: ids, ['state'], 10)}),
-        'ok_to_transfer': fields.function(_get_ok_to_transfer, type='boolean', string='OK to Transfer',
-            store={
-                'stock.picking': (lambda self, cr, uid, ids, c={}: ids, ['state', 'dispatched'], 20),}),
-    }
+    @api.one
+    def action_set_to_draft(self):
+        Move = self.env['stock.move']
+        moves = Move.search([('picking_id','=',self.id),('state','=','cancel')])
+        if moves:
+            moves.write({'state': 'draft'})

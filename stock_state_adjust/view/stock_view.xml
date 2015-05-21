@@ -24,9 +24,7 @@
             <button name="do_enter_transfer_details" position="replace">
                 <field name="ok_to_transfer" invisible="1"/>
                 <button name="do_enter_transfer_details" attrs="{'invisible': [('ok_to_transfer','=',False)]}" string="Transfer" groups="stock.group_stock_user" type="object" class="oe_highlight"/>
-<!-- 
-                <button name="do_enter_transfer_details" attrs="{'invisible': [('picking_type_code','=','internal'),('dispatched','=',False)]}" states="assigned,partially_available" string="Transfer" groups="stock.group_stock_user" type="object" class="oe_highlight"/>
- -->
+                <button name="action_set_to_draft" string="Set to Draft" groups="base.group_user" type="object" states="cancel"/>
             </button>
             <field name="date" position="before">
             	<field name="dispatched" readonly="1"/>
