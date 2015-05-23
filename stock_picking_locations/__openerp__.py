@@ -15,7 +15,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 {
-    'name': 'Stock State Adjust',
+    'name': 'Stock Picking Locations',
     'category': 'Stock',
     'version': '0.5',
     'author': 'Rooms For (Hong Kong) Limited T/A OSCG',
@@ -26,11 +26,11 @@
     'description': """ 
 Overview:
 ---------
-- Adds a state 'Dispatched' in between 'Ready to Transfer' and 'Transferred'.
+- Adds destination and source location fields in picking and defaults \
+selected values in location fields of the lines (stock moves)..
     """,
     'data': [
              'view/stock_view.xml',
-             'data/stock_data.xml',
              ],
     'installable': True,
 }

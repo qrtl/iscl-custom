@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+
+        <record id="mt_pick_cancelled" model="mail.message.subtype">
+            <field name="name">Picking cancelled</field>
+            <field name="res_model">stock.picking</field>
+            <field name="default" eval="False"/>
+            <field name="description">Picking cancelled</field>
+        </record>
+        <record id="mt_pick_confirmed" model="mail.message.subtype">
+            <field name="name">Picking confirmed</field>
+            <field name="res_model">stock.picking</field>
+            <field name="default" eval="False"/>
+            <field name="description">Picking confirmed</field>
+        </record>
+
+    </data>
+</openerp>

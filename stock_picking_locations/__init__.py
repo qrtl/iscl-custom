@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#    Copyright (c) Rooms For (Hong Kong) Limited T/A OSCG. All Rights Reserved
+#    Copyright (c) Rooms For (Hong Kong) Limited T/A OSCG
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -14,24 +14,6 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-{
-    'name': 'Stock State Adjust',
-    'category': 'Stock',
-    'version': '0.5',
-    'author': 'Rooms For (Hong Kong) Limited T/A OSCG',
-    'website': 'www.openerp-asia.net',
-    'depends': ['stock',
-                ],
-    'summary':"""""",
-    'description': """ 
-Overview:
----------
-- Adds a state 'Dispatched' in between 'Ready to Transfer' and 'Transferred'.
-    """,
-    'data': [
-             'view/stock_view.xml',
-             'data/stock_data.xml',
-             ],
-    'installable': True,
-}
+import model
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

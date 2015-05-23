@@ -35,6 +35,12 @@ class StockMove(models.Model):
 
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
+    _track = {
+        'state': {
+            'stock_state_adjust.mt_pick_cancelled': lambda self, cr, uid, obj, ctx=None: obj.state == 'cancel',
+            'stock_state_adjust.mt_pick_confirmed': lambda self, cr, uid, obj, ctx=None: obj.state == 'confirmed',
+        },
+    }
  
     dispatched = fields.Boolean(compute='_update_dispatched', store=True, string='Dispatched')
     ok_to_transfer = fields.Boolean(compute='_get_ok_to_transfer', store=True, string='OK to Transfer')
