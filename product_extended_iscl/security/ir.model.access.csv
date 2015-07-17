@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_product_designer_user,product.designer.user,model_product_designer,base.group_user,1,0,0,0
+access_product_designer_sale_manager,product.designer.sale_manager,model_product_designer,base.group_sale_manager,1,1,1,1
+access_product_allergy_user,product.allergy.user,model_product_allergy,base.group_user,1,0,0,0
+access_product_allergy_sale_manager,product.allergy.sale_manager,model_product_allergy,base.group_sale_manager,1,1,1,1
+access_product_packaging_unit_user,product.packaging_unit.user,model_product_packaging_unit,base.group_user,1,0,0,0
+access_product_packaging_unit_sale_manager,product.packaging_unit.sale_manager,model_product_packaging_unit,base.group_sale_manager,1,1,1,1

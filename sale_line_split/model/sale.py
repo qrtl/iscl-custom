@@ -18,41 +18,25 @@ from openerp.osv import fields, osv
 from openerp.tools.translate import _
 
 
-class sale_order(osv.osv):
-    _inherit = "sale.order"
-
-    def action_button_split_line(self, cr, uid, ids, context=None):
-        context = context or {}
-        for sale in self.browse(cr, uid, ids, context=context):
-            if not sale.order_line:
-                raise osv.except_osv(_('Error!'),_('You cannot split a sales order which has no line.'))
-            for line in sale.order_line:
-                if line.to_split:
-                    prod_obj = self.pool.get('product.product')
-                    prod_ids = prod_obj.search(cr, uid, [('product_tmpl_id','=',line.product_id.product_tmpl_id.id)])
-                    for prod_id in prod_ids:
-                        if not prod_id == line.product_id.id:
-                            context_partner = {'lang': sale.partner_id.lang, 'partner_id': sale.partner_id.id}
-                            name = self.pool.get('product.product').name_get(cr, uid, [prod_id], context=context_partner)[0][1]
-                            if line.product_id.product_tmpl_id.description_sale:
-                                name += '\n'+line.product_id.product_tmpl_id.description_sale
-                            default = {'product_id': prod_id,
-                                       'to_split': False,
-                                       'name': name,
-                                       'product_uom_qty': 0.0,
-                                       'product_uos_qty': 0.0,
-                                       }
-                            sale_line_id = self.pool.get('sale.order.line').\
-                                copy(cr, uid, line.id, default=default, context=context)
-                    self.pool.get('sale.order.line').write(cr, uid, [line.id],
-                        {'to_split': False}, context=context)
-        return True
-
-
 class sale_order_line(osv.osv):
     _inherit = "sale.order.line"
 
-    _columns = {
-        'to_split': fields.boolean('To Split'),
-    }
-
+    def action_button_split_line(self, cr, uid, ids, context=None):
+        context = context or {}
+        prod_obj = self.pool.get('product.product')
+        line = self.browse(cr, uid, ids, context=context)
+        prod_ids = prod_obj.search(cr, uid, [('product_tmpl_id','=',line.product_id.product_tmpl_id.id)])
+        for prod_id in prod_ids:
+            if not prod_id == line.product_id.id:
+                context_partner = {'lang': line.order_id.partner_id.lang, 'partner_id': line.order_id.partner_id.id}
+                name = self.pool.get('product.product').name_get(cr, uid, [prod_id], context=context_partner)[0][1]
+                if line.product_id.product_tmpl_id.description_sale:
+                    name += '\n'+line.product_id.product_tmpl_id.description_sale
+                default = {'product_id': prod_id,
+#                            'to_split': False,
+                           'name': name,
+                           'product_uom_qty': 0.0,
+                           'product_uos_qty': 0.0,
+                           }
+                self.copy(cr, uid, line.id, default=default, context=context)
+        return True

@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="product_template_form_view_z1" model="ir.ui.view">
+            <field name="name">product.template.form.view.z1</field>
+            <field name="model">product.template</field>
+            <field name="priority">5</field>
+            <field name="inherit_id" ref="product.product_template_form_view"/>
+            <field name="arch" type="xml">
+                <field name="sale_ok" position="before">
+                    <field name="name_furigana" placeholder="ﾌﾘｶﾞﾅ..."/>
+                </field>
+                <xpath expr="//field[@name='description']" position="before">
+                    <group colspan="4">
+                        <group attrs="{'invisible':[('type','=','service')]}">
+                            <field name="brand"/>
+                            <field name="prod_type_ids"/>
+                        </group>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="product_template_search_view_z1" model="ir.ui.view">
+            <field name="name">product.template.search.z1</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_search_view"/>
+            <field name="arch" type="xml">
+                <field name="name" position="replace">
+                   <field name="name" string="Product" filter_domain="['|','|',('default_code','ilike',self),('name','ilike',self),('brand','ilike',self)]"/>
+                </field>
+            </field>
+        </record>
+
+        <record id="product_search_form_view_z1" model="ir.ui.view">
+            <field name="name">product.product.search.z1</field>
+            <field name="model">product.product</field>
+            <field name="priority">5</field>
+            <field name="inherit_id" ref="product.product_search_form_view"/>
+            <field name="arch" type="xml">
+                <field name="name" position="replace">
+                   <field name="name" string="Product" filter_domain="['|','|',('default_code','ilike',self),('name','ilike',self),('brand','ilike',self)]"/>
+                </field>
+            </field>
+        </record>
+
+
+		<!-- Packaging Maintenance -->
+        <record id="product_packaging_unit_view" model="ir.ui.view">
+            <field name="name">product.packaging.unit.view</field>
+            <field name="model">product.packaging.unit</field>
+            <field name="mode">primary</field>
+            <field name="arch" type="xml">
+                <form string="Product Packaging">
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only"/>
+                            <h1>
+                                <field name="name"/>
+                            </h1>
+                        </div>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="product_packaging_unit_list_view" model="ir.ui.view">
+            <field name="name">product.packaging.unit.list.view</field>
+            <field name="model">product.packaging.unit</field>
+            <field name="priority">1</field>
+            <field name="arch" type="xml">
+                <tree string="Product Packaging">
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="packaging_unit_action" model="ir.actions.act_window">
+            <field name="name">Product Packaging</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.packaging.unit</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="product_packaging_unit_view"/>
+        </record>
+        <record id="packaging_unit_action_view1" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="act_window_id" ref="packaging_unit_action"/>
+        </record>
+        <record id="packaging_unit_action_view2" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="act_window_id" ref="packaging_unit_action"/>
+        </record>
+
+        <menuitem action="packaging_unit_action"
+            id="menu_prod_packaging_unit"
+            parent="product.prod_config_main" sequence="15" />
+
+
+		<!-- Allergy -->
+        <record id="product_allergy_view" model="ir.ui.view">
+            <field name="name">product.allergy.view</field>
+            <field name="model">product.allergy</field>
+            <field name="mode">primary</field>
+            <field name="arch" type="xml">
+                <form string="Product Allergy">
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only"/>
+                            <h1>
+                                <field name="name"/>
+                            </h1>
+                        </div>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="product_allergy_list_view" model="ir.ui.view">
+            <field name="name">product.allergy.list.view</field>
+            <field name="model">product.allergy</field>
+            <field name="priority">1</field>
+            <field name="arch" type="xml">
+                <tree string="Product Allergy">
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="allergy_action" model="ir.actions.act_window">
+            <field name="name">Product Allergy</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.allergy</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="product_allergy_view"/>
+        </record>
+        <record id="allergy_action_view1" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="act_window_id" ref="allergy_action"/>
+        </record>
+        <record id="allergy_action_view2" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="act_window_id" ref="allergy_action"/>
+        </record>
+
+        <menuitem action="allergy_action"
+            id="menu_prod_allergy"
+            parent="product.prod_config_main" sequence="18" />
+
+<!-- Designer -->
+        <record id="product_designer_view" model="ir.ui.view">
+            <field name="name">product.designer.view</field>
+            <field name="model">product.designer</field>
+            <field name="mode">primary</field>
+            <field name="arch" type="xml">
+                <form string="Product Designer">
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only"/>
+                            <h1>
+                                <field name="name"/>
+                            </h1>
+                        </div>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="product_designer_list_view" model="ir.ui.view">
+            <field name="name">product.designer.list.view</field>
+            <field name="model">product.designer</field>
+            <field name="priority">1</field>
+            <field name="arch" type="xml">
+                <tree string="Product Designer">
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="designer_action" model="ir.actions.act_window">
+            <field name="name">Product Designer</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.designer</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="product_designer_view"/>
+        </record>
+        <record id="designer_action_view1" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="act_window_id" ref="designer_action"/>
+        </record>
+        <record id="designer_action_view2" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="act_window_id" ref="designer_action"/>
+        </record>
+
+        <menuitem action="designer_action"
+            id="menu_prod_designer"
+            parent="product.prod_config_main" sequence="20" />
+
+        <record id="product_template_search_view_z1" model="ir.ui.view">
+            <field name="name">product.template.search.z1</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_search_view"/>
+            <field name="arch" type="xml">
+		    <xpath expr="//field[@name='name']" position="after">
+		        <field name="seller_ids" string="Supplier"/>
+	        </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>
